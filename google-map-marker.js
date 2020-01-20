@@ -470,13 +470,14 @@ Polymer({
   },
 
   _clearListener: function(name) {
-    if (this._listeners[name]) {
+    if (this._listeners && this._listeners[name]) {
       google.maps.event.removeListener(this._listeners[name]);
       this._listeners[name] = null;
     }
   },
 
   _forwardEvent: function(name) {
+    this._listeners = this._listeners || {};
     this._listeners[name] = google.maps.event.addListener(this.marker, name, function(event) {
       this.fire('google-map-marker-' + name, event);
     }.bind(this));
