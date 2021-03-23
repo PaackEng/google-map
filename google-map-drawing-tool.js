@@ -19,15 +19,21 @@ Polymer({
   properties: {
     map: {
       type: Object,
-      observer: "_mapLoaded"
+      observer: "_mapLoaded",
     },
     polygonColor: {
       type: String,
-      value: "#169FFF"
+      value: "#169FFF",
     },
     disabled: {
       type: Object,
-      observer: "_disabledChanged"
+      observer: "_disabledChanged",
+    },
+  },
+  detached: function () {
+    if (this.currentPolygon) {
+      this.currentPolygon.setMap(null);
+      this.currentPolygon = null;
     }
   },
   _disabledChanged: function () {
@@ -60,8 +66,8 @@ Polymer({
           strokeOpacity: 0.8,
           strokeWeight: 4,
           fillColor: this.polygonColor,
-          fillOpacity: 0.35
-        }
+          fillOpacity: 0.35,
+        },
       });
 
       this.manager.setMap(this.disabled ? null : this.map);
@@ -70,18 +76,22 @@ Polymer({
         this.manager,
         "polygoncomplete",
         function (event) {
-          this.currentPolygon = event;
+          if (!this.disabled) {
+            this.currentPolygon = event;
 
-          this.manager.setDrawingMode(null);
+            console.log("vrau");
 
-          const result = event
-            .getPath()
-            .getArray()
-            .map(point => ({ lat: point.lat(), lng: point.lng() }));
+            this.manager.setDrawingMode(null);
 
-          this.fire("on-polygon-completed", result);
+            const result = event
+              .getPath()
+              .getArray()
+              .map((point) => ({ lat: point.lat(), lng: point.lng() }));
+
+            this.fire("on-polygon-completed", result);
+          }
         }.bind(this)
       );
     }
-  }
+  },
 });
