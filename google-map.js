@@ -63,6 +63,7 @@ import '@google-web-components/google-apis/google-maps-api.js';
 import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import '@polymer/iron-selector/iron-selector.js';
 import './google-map-marker.js';
+import './google-map-drawing-tool.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
