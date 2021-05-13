@@ -37,5 +37,8 @@
   "devDependencies": {
     "wct-browser-legacy": "^1.0.1",
     "@polymer/iron-component-page": "^4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
