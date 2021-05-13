@@ -24,9 +24,9 @@
     "Frankie Fu <ffu@google.com>",
     "Scott Miles <sjmiles@google.com>",
     "Eric Bidelman <ebidel@gmail.com>",
-	"Jouderian Nobre Junior <jouderianjr@gmail.com>",
-	"Pranav Pandey <pranavpande92@gmail.com>",
-	"Iulia Lungu <iuliamarialungu@yahoo.com>"
+    "Jouderian Nobre Junior <jouderianjr@gmail.com>",
+    "Pranav Pandey <pranavpande92@gmail.com>",
+    "Iulia Lungu <iuliamarialungu@yahoo.com>"
   ],
   "dependencies": {
     "@google-web-components/google-apis": "^3.0.1",
