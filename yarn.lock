@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@PaackEng/webcomponents-google-apis@^3.0.1":
-  version "3.0.1"
-  resolved "https://npm.pkg.github.com/download/@PaackEng/webcomponents-google-apis/3.0.1/f4610853d02c8f921bc614cb454a3a9a65fed7ac77db29714907a1127c632b72#d83d637c34a9519a5959c8b8bb4d91e46afd6491"
-  integrity sha512-yGMJwFJIRLtsJkIHFcQYkp84x7I5l3VOXPAUhv4X8m0WUIoQAKnsAt7Dw3hWCOyKa2lL6kpwxZN4eMDKgJyLgw==
+"@PaackEng/webcomponents-google-apis@^3.0.1-adventure":
+  version "3.0.1-adventure"
+  resolved "https://npm.pkg.github.com/download/@PaackEng/webcomponents-google-apis/3.0.1-adventure/9ee0b1929f45786d301011cf5343eb0e95c59d67a56f5d68e8e9ad138a00b325#cf664ee925fe256a3cf7920b64f479944290e667"
+  integrity sha512-DsxqLvbrVNEwlb1mLh5DRPSVC8qOyx/abt5R4mBs8efjNVnapVW5jx4kFOAqrBZ1dokMmxWuWoVWtq7WxIlHTw==
   dependencies:
     "@polymer/iron-jsonp-library" "^3.0.0-pre.19"
     "@polymer/polymer" "^3.0.0"
