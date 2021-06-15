@@ -270,7 +270,7 @@ Polymer({
      */
     version: {
       type: String,
-      value: '3.exp'
+      value: 'beta'
     },
 
     /**

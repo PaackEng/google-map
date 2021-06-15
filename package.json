@@ -11,7 +11,7 @@
   "repository": "PaackEng/google-map",
   "homepage": "https://github.com/PaackEng/google-map",
   "name": "@PaackEng/google-map",
-  "version": "3.0.1-adventure",
+  "version": "3.0.2",
   "license": "Apache-2.0",
   "resolutions": {
     "inherits": "2.0.3",
@@ -29,11 +29,9 @@
     "Iulia Lungu <iuliamarialungu@yahoo.com>"
   ],
   "dependencies": {
-    "@PaackEng/webcomponents-google-apis": "^3.0.1-adventure",
+    "@PaackEng/webcomponents-google-apis": "^3.0.2",
     "@polymer/iron-resizable-behavior": "^3.0.0",
-    "@polymer/iron-selector": "^3.0.0"
-  },
-  "peerDependencies": {
+    "@polymer/iron-selector": "^3.0.0",
     "@polymer/polymer": "^3.0.0"
   },
   "devDependencies": {
