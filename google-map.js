@@ -86,7 +86,7 @@ Polymer({
       }
     </style>
 
-    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]">
+    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]" map-mode="[[mapMode]]">
     </google-maps-api>
 
     <div id="map"></div>
@@ -430,6 +430,11 @@ Polymer({
     singleInfoWindow: {
       type: Boolean,
       value: false
+    },
+
+    mapMode : {
+      type: String,
+      value: "common"
     }
   },
 
@@ -471,7 +476,10 @@ Polymer({
       return; // not attached
     }
 
-    this.map = new google.maps.Map(this.$.map, this._getMapOptions());
+    if (this.$.api.mapMode === 'journeySharing')
+      this.map = this._initJouneySharingGMap();
+    else
+      this.map = new google.maps.Map(this.$.map, this._getMapOptions());
     this._listeners = {};
     this._updateCenter();
     this._loadKml();
@@ -479,6 +487,32 @@ Polymer({
     this._updateObjects();
     this._addMapListeners();
     this.fire('google-map-ready');
+  },
+
+  _initJouneySharingGMap: function() {
+    const authTokenFetcher = function() {
+      return {
+        token: "{{.Token}}",
+        expiresInSeconds: 3600
+      };
+    };
+    const locationProvider = new google.maps.journeySharing
+      .FleetEngineDeliveryVehicleLocationProvider({
+        projectId: "paack-910",
+        authTokenFetcher,
+        taskFilterOptions: {
+          state: "OPEN"
+        },
+        deliveryVehicleId: "92c4fcab-7097-4f75-90f0-5ee7ea24ee0d",
+      });
+    const mapView = new
+      google.maps.journeySharing.JourneySharingMapView({
+        element: this.$.map,
+        locationProvider: locationProvider,
+      });
+
+    mapView.map.setOptions(this._getMapOptions()); 
+    return mapView.map;
   },
 
   _mapApiLoaded: function() {
