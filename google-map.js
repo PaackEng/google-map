@@ -86,7 +86,7 @@ Polymer({
       }
     </style>
 
-    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]" map-mode="[[mapMode]]">
+    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]" map-mode="[[mapMode]]" fleet-engine-project-id=[[fleetEngineProjectId]] delivery-vehicle-id="[[deliveryVehicleId]]">
     </google-maps-api>
 
     <div id="map"></div>
@@ -432,9 +432,23 @@ Polymer({
       value: false
     },
 
-    mapMode : {
+    /**
+     * TODO
+     */
+    mapMode: {
       type: String,
       value: "common"
+    },
+
+    fleetEngineProjectId: {
+      type: String,
+      value: ""
+    },
+
+    deliveryVehicleId: {
+      type: String,
+      value: "",
+      observer: '_deliveryVehicleChanged'
     }
   },
 
@@ -496,23 +510,23 @@ Polymer({
         expiresInSeconds: 3600
       };
     };
-    const locationProvider = new google.maps.journeySharing
+    this.locationProvider = new google.maps.journeySharing
       .FleetEngineDeliveryVehicleLocationProvider({
-        projectId: "paack-910",
+        projectId: this.$.api.fleetEngineProjectId,
         authTokenFetcher,
         taskFilterOptions: {
           state: "OPEN"
         },
-        deliveryVehicleId: "92c4fcab-7097-4f75-90f0-5ee7ea24ee0d",
+        deliveryVehicleId: this.$.api.deliveryVehicleId,
       });
-    const mapView = new
+    this.journeySharingMapView = new
       google.maps.journeySharing.JourneySharingMapView({
         element: this.$.map,
-        locationProvider: locationProvider,
+        locationProvider: this.locationProvider,
       });
 
-    mapView.map.setOptions(this._getMapOptions()); 
-    return mapView.map;
+    this.journeySharingMapView.map.setOptions(this._getMapOptions()); 
+    return this.journeySharingMapView.map;
   },
 
   _mapApiLoaded: function() {
@@ -753,6 +767,15 @@ Polymer({
         this._clearListener('mousemove');
         this._clearListener('mouseout');
         this._clearListener('mouseover');
+      }
+    }
+  },
+
+  _deliveryVehicleChanged: function() {
+    if (this.map) {
+      if (this.locationProvider) {
+        console.log('I need API to know what to do next!')
+        // TODO
       }
     }
   },
