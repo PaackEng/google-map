@@ -86,7 +86,8 @@ Polymer({
       }
     </style>
 
-    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]" map-mode="[[mapMode]]" fleet-engine-project-id=[[fleetEngineProjectId]] delivery-vehicle-id="[[deliveryVehicleId]]">
+    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]"
+      fleet-engine-access-token="[[fleetEngineAccessToken]]" fleet-engine-project-id=[[fleetEngineProjectId]] delivery-vehicle-id="[[deliveryVehicleId]]">
     </google-maps-api>
 
     <div id="map"></div>
@@ -433,11 +434,12 @@ Polymer({
     },
 
     /**
-     * TODO
+     * Secret sauce Google gave to us.
      */
-    mapMode: {
+    fleetEngineAccessToken: {
       type: String,
-      value: "common"
+      value: null,
+      observer: '_fleetEngineAccessTokenChanged'
     },
 
     fleetEngineProjectId: {
@@ -490,10 +492,11 @@ Polymer({
       return; // not attached
     }
 
-    if (this.$.api.mapMode === 'journeySharing')
+    if (this.$.api.fleetEngineAccessToken !== null) {
       this.map = this._initJouneySharingGMap();
-    else
+    } else {
       this.map = new google.maps.Map(this.$.map, this._getMapOptions());
+    }
     this._listeners = {};
     this._updateCenter();
     this._loadKml();
@@ -504,9 +507,10 @@ Polymer({
   },
 
   _initJouneySharingGMap: function() {
+    this.fleetEngineAccessToken = this.$.api.fleetEngineAccessToken;
     const authTokenFetcher = function() {
       return {
-        token: "{{.Token}}",
+        token: this.fleetEngineAccessToken,
         expiresInSeconds: 3600
       };
     };
@@ -519,6 +523,9 @@ Polymer({
         },
         deliveryVehicleId: this.$.api.deliveryVehicleId,
       });
+    this.locationProvider.addListener('error', e => {
+      console.error(e.error);
+    });
     this.journeySharingMapView = new
       google.maps.journeySharing.JourneySharingMapView({
         element: this.$.map,
@@ -772,12 +779,13 @@ Polymer({
   },
 
   _deliveryVehicleChanged: function() {
-    if (this.map) {
-      if (this.locationProvider) {
-        console.log('I need API to know what to do next!')
-        // TODO
-      }
+    if (this.map && this.locationProvider) {
+      this.locationProvider.deliveryVehicleId = this.$.api.deliveryVehicleId;
     }
+  },
+
+  _fleetEngineAccessTokenChanged: function() {
+    this.fleetEngineAccessToken = this.$.api.fleetEngineAccessToken;
   },
 
   _maxZoomChanged: function() {
