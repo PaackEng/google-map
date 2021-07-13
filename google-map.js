@@ -508,9 +508,10 @@ Polymer({
 
   _initJouneySharingGMap: function() {
     this.fleetEngineAccessToken = this.$.api.fleetEngineAccessToken;
+    var parent = this;
     const authTokenFetcher = function() {
       return {
-        token: this.fleetEngineAccessToken,
+        token: parent.fleetEngineAccessToken,
         expiresInSeconds: 3600
       };
     };
@@ -524,7 +525,8 @@ Polymer({
         deliveryVehicleId: this.$.api.deliveryVehicleId,
       });
     this.locationProvider.addListener('error', e => {
-      console.error(e.error);
+      document.dispatchEvent(new ErrorEvent('error', {error: e.error, filename: 'journey-sharing'}));
+      return false;
     });
     this.journeySharingMapView = new
       google.maps.journeySharing.JourneySharingMapView({
