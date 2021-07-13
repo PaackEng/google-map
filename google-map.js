@@ -444,12 +444,12 @@ Polymer({
 
     fleetEngineProjectId: {
       type: String,
-      value: ""
+      value: ''
     },
 
     deliveryVehicleId: {
       type: String,
-      value: "",
+      value: '',
       observer: '_deliveryVehicleChanged'
     }
   },
