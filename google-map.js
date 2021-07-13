@@ -508,10 +508,9 @@ Polymer({
 
   _initJouneySharingGMap: function() {
     this.fleetEngineAccessToken = this.$.api.fleetEngineAccessToken;
-    var parent = this;
-    const authTokenFetcher = function() {
+    const authTokenFetcher = () => {
       return {
-        token: parent.fleetEngineAccessToken,
+        token: this.fleetEngineAccessToken,
         expiresInSeconds: 3600
       };
     };
