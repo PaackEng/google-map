@@ -59,7 +59,7 @@ If you're seeing the message "You have included the Google Maps API multiple tim
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import '@google-web-components/google-apis/google-maps-api.js';
+import '@PaackEng/webcomponents-google-apis/google-maps-api.js';
 import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import '@polymer/iron-selector/iron-selector.js';
 import './google-map-marker.js';
@@ -86,7 +86,8 @@ Polymer({
       }
     </style>
 
-    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]">
+    <google-maps-api id="api" api-key="[[apiKey]]" client-id="[[clientId]]" version="[[version]]" signed-in="[[signedIn]]" language="[[language]]" on-api-load="_mapApiLoaded" maps-url="[[mapsUrl]]"
+      fleet-engine-access-token="[[fleetEngineAccessToken]]" fleet-engine-project-id=[[fleetEngineProjectId]] delivery-vehicle-id="[[deliveryVehicleId]]">
     </google-maps-api>
 
     <div id="map"></div>
@@ -270,7 +271,7 @@ Polymer({
      */
     version: {
       type: String,
-      value: '3.exp'
+      value: 'beta'
     },
 
     /**
@@ -430,6 +431,26 @@ Polymer({
     singleInfoWindow: {
       type: Boolean,
       value: false
+    },
+
+    /**
+     * Secret sauce Google gave to us.
+     */
+    fleetEngineAccessToken: {
+      type: String,
+      value: null,
+      observer: '_fleetEngineAccessTokenChanged'
+    },
+
+    fleetEngineProjectId: {
+      type: String,
+      value: ''
+    },
+
+    deliveryVehicleId: {
+      type: String,
+      value: '',
+      observer: '_deliveryVehicleChanged'
     }
   },
 
@@ -471,7 +492,11 @@ Polymer({
       return; // not attached
     }
 
-    this.map = new google.maps.Map(this.$.map, this._getMapOptions());
+    if (this.$.api.fleetEngineAccessToken !== null) {
+      this.map = this._initJouneySharingGMap();
+    } else {
+      this.map = new google.maps.Map(this.$.map, this._getMapOptions());
+    }
     this._listeners = {};
     this._updateCenter();
     this._loadKml();
@@ -479,6 +504,37 @@ Polymer({
     this._updateObjects();
     this._addMapListeners();
     this.fire('google-map-ready');
+  },
+
+  _initJouneySharingGMap: function() {
+    this.fleetEngineAccessToken = this.$.api.fleetEngineAccessToken;
+    const authTokenFetcher = () => {
+      return {
+        token: this.fleetEngineAccessToken,
+        expiresInSeconds: 3600
+      };
+    };
+    this.locationProvider = new google.maps.journeySharing
+      .FleetEngineDeliveryVehicleLocationProvider({
+        projectId: this.$.api.fleetEngineProjectId,
+        authTokenFetcher,
+        taskFilterOptions: {
+          state: "OPEN"
+        },
+        deliveryVehicleId: this.$.api.deliveryVehicleId,
+      });
+    this.locationProvider.addListener('error', e => {
+      document.dispatchEvent(new ErrorEvent('error', {error: e.error, filename: 'journey-sharing'}));
+      return false;
+    });
+    this.journeySharingMapView = new
+      google.maps.journeySharing.JourneySharingMapView({
+        element: this.$.map,
+        locationProvider: this.locationProvider,
+      });
+
+    this.journeySharingMapView.map.setOptions(this._getMapOptions()); 
+    return this.journeySharingMapView.map;
   },
 
   _mapApiLoaded: function() {
@@ -721,6 +777,16 @@ Polymer({
         this._clearListener('mouseover');
       }
     }
+  },
+
+  _deliveryVehicleChanged: function() {
+    if (this.map && this.locationProvider) {
+      this.locationProvider.deliveryVehicleId = this.$.api.deliveryVehicleId;
+    }
+  },
+
+  _fleetEngineAccessTokenChanged: function() {
+    this.fleetEngineAccessToken = this.$.api.fleetEngineAccessToken;
   },
 
   _maxZoomChanged: function() {
